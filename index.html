@@ -10,7 +10,6 @@
   <style>
     /* --- CSS DEĞİŞKENLERİ --- */
     :root {
-      /* Varsayılan (Açık) Tema */
       --bg-gradient: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
       --primary-color: #6a11cb;
       --secondary-color: #2575fc;
@@ -18,14 +17,14 @@
       --text-secondary: #666;
       --glass-bg: rgba(255, 255, 255, 0.25);
       --card-bg: rgba(255, 255, 255, 0.9);
-      --modal-bg: rgba(255, 255, 255, 0.95); /* Yeni: Modal için */
+      --modal-bg: rgba(255, 255, 255, 0.95);
       --input-bg: rgba(255, 255, 255, 0.9);
       --input-text: #333;
       --shadow-color: rgba(31, 38, 135, 0.37);
       --toggle-bg: rgba(255, 255, 255, 0.3);
+      --sidebar-bg: #fff;
     }
 
-    /* Karanlık Mod Renkleri */
     body.dark-mode {
       --bg-gradient: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #3f0d58);
       --primary-color: #bb86fc;
@@ -34,92 +33,80 @@
       --text-secondary: #aaa;
       --glass-bg: rgba(0, 0, 0, 0.4);
       --card-bg: rgba(30, 30, 40, 0.9);
-      --modal-bg: rgba(25, 25, 35, 0.95); /* Yeni: Modal için */
+      --modal-bg: rgba(25, 25, 35, 0.95);
       --input-bg: rgba(255, 255, 255, 0.15);
       --input-text: #fff;
       --shadow-color: rgba(0, 0, 0, 0.5);
       --toggle-bg: rgba(0, 0, 0, 0.4);
+      --sidebar-bg: #1e1e2d;
     }
 
     * { box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: var(--bg-gradient);
-      background-size: 400% 400%;
+      margin: 0; padding: 0;
+      background: var(--bg-gradient); background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-main);
-      transition: background 0.5s, color 0.5s;
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      color: var(--text-main); transition: background 0.5s, color 0.5s;
+      overflow-x: hidden; /* Sidebar için gerekli */
     }
 
     @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
     }
 
-    /* --- Tema Butonları --- */
-    .theme-toggle-container {
-      position: absolute;
-      top: 20px; right: 20px;
-      background: var(--toggle-bg);
-      backdrop-filter: blur(5px);
-      padding: 5px;
-      border-radius: 30px;
-      display: flex; gap: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      z-index: 100;
+    /* --- Üst Butonlar (Tema + Favoriler) --- */
+    .top-controls {
+      position: absolute; top: 20px; right: 20px;
+      display: flex; gap: 10px; z-index: 100;
     }
-    .theme-btn {
-      background: none; border: none; font-size: 22px; cursor: pointer;
-      padding: 5px 10px; border-radius: 50%;
-      transition: all 0.3s ease; opacity: 0.5; filter: grayscale(100%);
+    .control-btn {
+      background: var(--toggle-bg); backdrop-filter: blur(5px);
+      border: none; border-radius: 50%; width: 45px; height: 45px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: var(--text-main); cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
     }
-    .theme-btn:hover { background: rgba(255,255,255,0.1); opacity: 1; }
-    .theme-btn.active {
-      opacity: 1; filter: grayscale(0%); transform: scale(1.15);
-      background: rgba(255,255,255,0.2); box-shadow: 0 0 15px var(--primary-color);
+    .control-btn:hover { transform: scale(1.1); background: var(--card-bg); }
+    .fav-badge {
+      position: relative;
+    }
+    #fav-count {
+      position: absolute; top: -5px; right: -5px;
+      background: #ff4757; color: white; font-size: 12px;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold;
     }
 
     /* --- Header --- */
-    header { margin-top: 60px; text-align: center; animation: fadeInDown 1s ease-out; }
+    header { margin-top: 80px; text-align: center; animation: fadeInDown 1s ease-out; }
     h1 { font-size: 2.5rem; font-weight: 600; text-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 10px; color: #ffffff; }
     header p { font-size: 1.1rem; opacity: 0.9; font-weight: 300; color: #ffffff; }
 
     /* --- Arama --- */
     #searchBar {
       margin: 30px 0; display: flex; gap: 15px;
-      background: var(--glass-bg); padding: 15px;
-      border-radius: 50px; box-shadow: 0 8px 32px 0 var(--shadow-color);
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeInUp 1s ease-out 0.3s backwards;
-      width: 90%; max-width: 600px;
-      transition: transform 0.3s, background 0.5s;
+      background: var(--glass-bg); padding: 15px; border-radius: 50px;
+      box-shadow: 0 8px 32px 0 var(--shadow-color);
+      backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.18);
+      width: 90%; max-width: 600px; transition: transform 0.3s;
     }
     #searchBar:focus-within { transform: scale(1.02); }
     #searchBar input {
       padding: 12px 20px; border-radius: 30px; border: none; flex: 1;
       font-size: 16px; outline: none; font-family: 'Poppins', sans-serif;
       color: var(--input-text); background: var(--input-bg);
-      transition: background 0.5s, color 0.5s;
     }
-    #searchBar input::placeholder { color: var(--text-secondary); }
     #searchBar button {
       padding: 12px 30px; border: none; border-radius: 30px;
       background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
       color: white; font-size: 16px; font-weight: 600; cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s;
     }
-    #searchBar button:hover {
-      transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); filter: brightness(1.1);
-    }
+    #searchBar button:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
     /* --- Sonuç Alanı --- */
     #results {
@@ -127,119 +114,130 @@
       gap: 30px; padding: 20px; width: 100%; max-width: 1200px; padding-bottom: 50px;
     }
 
-    /* --- GELİŞMİŞ KART TASARIMI (3D Tilt Uyumlu) --- */
+    /* --- KART TASARIMI --- */
     .book {
-      background: var(--card-bg);
-      border-radius: 20px;
-      overflow: hidden;
+      background: var(--card-bg); border-radius: 20px; overflow: hidden;
       box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      /* 3D efekt için bu satırlar kritik */
-      transform-style: preserve-3d;
-      transform: perspective(1000px);
-      position: relative;
-      display: flex; flex-direction: column;
-      cursor: pointer;
+      transform-style: preserve-3d; transform: perspective(1000px);
+      position: relative; display: flex; flex-direction: column; cursor: pointer;
     }
-    /* Hover JS ile kontrol edilecek ama bu da yedek */
     .book:hover { z-index: 10; }
-
-    .book-content { display: flex; flex-direction: column; height: 100%; }
+    
+    /* Kalp Butonu (Kart Üzerindeki) */
+    .add-fav-btn {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255,255,255,0.8); width: 35px; height: 35px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer; z-index: 50; /* Resmin üstünde olsun */
+      transition: 0.3s; color: #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .add-fav-btn:hover { transform: scale(1.2); }
+    .add-fav-btn.active { color: #ff4757; } /* Kırmızı Kalp */
 
     .book img {
       width: 100%; height: 320px; object-fit: cover;
-      border-bottom: 5px solid var(--primary-color);
-      transition: transform 0.5s;
+      border-bottom: 5px solid var(--primary-color); transition: transform 0.5s;
     }
     .book:hover img { transform: scale(1.05); }
 
     .book-info {
       padding: 20px; color: var(--text-main); flex-grow: 1;
       display: flex; flex-direction: column; justify-content: space-between;
-      transition: color 0.5s; background: var(--card-bg);
-      backdrop-filter: blur(5px);
+      background: var(--card-bg); backdrop-filter: blur(5px);
     }
-    .book-info h3 { margin: 0 0 10px; font-size: 18px; color: var(--text-main); line-height: 1.4; }
+    .book-info h3 { margin: 0 0 10px; font-size: 18px; line-height: 1.4; }
     .book-info p { margin: 5px 0; font-size: 14px; color: var(--text-secondary); }
 
-    /* --- SKELETON LOADING (Yükleniyor Efekti) --- */
-    .skeleton-card {
-      background: var(--card-bg); border-radius: 20px; padding: 15px; height: 400px;
-      display: flex; flex-direction: column; gap: 10px;
+    /* --- FAVORİLER SIDEBAR (YAN PANEL) --- */
+    .sidebar {
+      position: fixed; top: 0; right: -350px; /* Başlangıçta gizli */
+      width: 320px; height: 100vh;
+      background: var(--sidebar-bg);
+      box-shadow: -5px 0 30px rgba(0,0,0,0.3);
+      z-index: 2000; padding: 20px;
+      transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex; flex-direction: column;
     }
-    .skeleton {
-      background: linear-gradient(90deg, rgba(190,190,190,0.2) 25%, rgba(129,129,129,0.24) 50%, rgba(190,190,190,0.2) 75%);
-      background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 8px;
+    .sidebar.open { right: 0; }
+    
+    .sidebar-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; border-bottom: 1px solid rgba(128,128,128,0.2);
+      padding-bottom: 10px;
     }
+    .sidebar-header h2 { margin: 0; font-size: 1.5rem; color: var(--text-main); }
+    .close-sidebar {
+      background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary);
+    }
+    
+    .fav-list {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+    }
+    .fav-item {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--glass-bg); padding: 10px; border-radius: 12px;
+      border: 1px solid rgba(128,128,128,0.1);
+    }
+    .fav-item img { width: 50px; height: 75px; object-fit: cover; border-radius: 5px; }
+    .fav-info { flex: 1; }
+    .fav-info h4 { margin: 0; font-size: 14px; color: var(--text-main); }
+    .fav-info p { margin: 2px 0 0; font-size: 12px; color: var(--text-secondary); }
+    .remove-fav {
+      background: none; border: none; color: #ff4757; cursor: pointer; font-size: 16px;
+    }
+
+    /* --- Overlay (Sidebar açılınca arkası kararsın) --- */
+    #sidebar-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 1999;
+      display: none; opacity: 0; transition: opacity 0.3s;
+    }
+    #sidebar-overlay.active { display: block; opacity: 1; }
+
+    /* --- Skeleton & Modal & Toast (Eski Kodlar) --- */
+    .skeleton-card { background: var(--card-bg); border-radius: 20px; padding: 15px; height: 400px; display: flex; flex-direction: column; gap: 10px; }
+    .skeleton { background: linear-gradient(90deg, rgba(190,190,190,0.2) 25%, rgba(129,129,129,0.24) 50%, rgba(190,190,190,0.2) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 8px; }
     .sk-img { height: 250px; width: 100%; }
     .sk-title { height: 20px; width: 80%; }
     .sk-text { height: 15px; width: 50%; }
     @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    /* --- MODAL (Detay Penceresi) --- */
-    #modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-      z-index: 1000; display: none; justify-content: center; align-items: center;
-      opacity: 0; transition: opacity 0.3s;
-    }
+    #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
     #modal-overlay.active { display: flex; opacity: 1; }
-
-    .modal-content {
-      background: var(--modal-bg); width: 90%; max-width: 800px;
-      border-radius: 20px; padding: 30px; display: flex; gap: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: translateY(50px);
-      transition: transform 0.3s; color: var(--text-main);
-    }
+    .modal-content { background: var(--modal-bg); width: 90%; max-width: 800px; border-radius: 20px; padding: 30px; display: flex; gap: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: translateY(50px); transition: transform 0.3s; color: var(--text-main); position: relative; }
     #modal-overlay.active .modal-content { transform: translateY(0); }
-    
-    .modal-close {
-      position: absolute; top: 15px; right: 20px; font-size: 30px;
-      cursor: pointer; color: var(--text-secondary); transition: 0.2s;
-    }
-    .modal-close:hover { color: var(--primary-color); }
-    
-    .modal-img { width: 200px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-secondary); }
+    .modal-img { width: 200px; border-radius: 10px; }
     .modal-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .modal-btn {
-      display: inline-block; margin-top: 20px; padding: 10px 25px;
-      background: var(--primary-color); color: white; text-decoration: none;
-      border-radius: 8px; font-weight: bold; width: fit-content;
-    }
+    .modal-btn { display: inline-block; margin-top: 20px; padding: 10px 25px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; width: fit-content; }
 
-    /* --- TOAST BİLDİRİM --- */
-    #toast {
-      visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-      text-align: center; border-radius: 8px; padding: 16px; position: fixed;
-      z-index: 1001; bottom: 30px; right: 30px; font-size: 17px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px;
-    }
+    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 3000; bottom: 30px; right: 30px; font-size: 17px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
     @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
     @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
 
-    /* Responsive */
     @media (max-width: 700px) {
-      .modal-content { flex-direction: column; align-items: center; text-align: center; padding: 20px; }
-      .modal-img { width: 150px; margin-bottom: 20px; }
-      h1 { font-size: 1.8rem; }
-      #searchBar { flex-direction: column; width: 95%; border-radius: 20px; }
-      #searchBar button { width: 100%; }
-      .theme-toggle-container { top: 10px; right: 10px; }
+      .modal-content { flex-direction: column; align-items: center; text-align: center; }
+      #searchBar { flex-direction: column; }
+      .sidebar { width: 85%; }
     }
   </style>
 </head>
-<body onload="loadTheme()">
+<body onload="init()">
 
-  <div class="theme-toggle-container">
-    <button id="light-btn" class="theme-btn active" onclick="setTheme('light')" title="Açık Tema">☀️</button>
-    <button id="dark-btn" class="theme-btn" onclick="setTheme('dark')" title="Koyu Tema">🌙</button>
+  <div class="top-controls">
+    <button class="control-btn fav-badge" onclick="toggleSidebar()" title="Favorilerim">
+      <i class="fas fa-heart" style="color: #ff4757;"></i>
+      <span id="fav-count">0</span>
+    </button>
+    <button id="light-btn" class="control-btn active" onclick="setTheme('light')" title="Açık Tema"><i class="fas fa-sun"></i></button>
+    <button id="dark-btn" class="control-btn" onclick="setTheme('dark')" title="Koyu Tema"><i class="fas fa-moon"></i></button>
   </div>
 
   <header>
     <h1>📚 Sanal Kütüphane 📚</h1>
-    <p>Yazarlar ve Kitaplar Bir Tıkla Uzağında.</p>
+    <p>Favorilerini oluştur, dünyanı genişlet.</p>
   </header>
 
   <div id="searchBar">
@@ -248,6 +246,17 @@
   </div>
 
   <div id="results"></div>
+
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="fav-sidebar">
+    <div class="sidebar-header">
+      <h2>❤️ Favorilerim</h2>
+      <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+    </div>
+    <div class="fav-list" id="fav-list-container">
+      <p style="text-align:center; margin-top:20px; color:var(--text-secondary);">Henüz favori kitap yok.</p>
+    </div>
+  </div>
 
   <div id="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content">
@@ -265,38 +274,6 @@
   <div id="toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Mesaj</span></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
-
   <script src="script.js"></script>
-  
-  <script>
-    function setTheme(theme) {
-      const body = document.body;
-      const lightBtn = document.getElementById('light-btn');
-      const darkBtn = document.getElementById('dark-btn');
-      if (theme === 'dark') {
-        body.classList.add('dark-mode');
-        darkBtn.classList.add('active'); lightBtn.classList.remove('active');
-        localStorage.setItem('selectedTheme', 'dark');
-      } else {
-        body.classList.remove('dark-mode');
-        lightBtn.classList.add('active'); darkBtn.classList.remove('active');
-        localStorage.setItem('selectedTheme', 'light');
-      }
-    }
-
-    function loadTheme() {
-      const savedTheme = localStorage.getItem('selectedTheme');
-      if (savedTheme === 'dark') setTheme('dark');
-      else setTheme('light');
-    }
-
-    // Modalı Kapatma Fonksiyonu (Overlay'e basınca kapanması için)
-    function closeModal(e) {
-      if(!e || e.target.id === 'modal-overlay' || e.target.className === 'modal-close') {
-        document.getElementById('modal-overlay').classList.remove('active');
-      }
-    }
-  </script>
-
 </body>
 </html>
